@@ -1,0 +1,73 @@
+#!ipxe
+
+# Variables are specified in boot.ipxe.cfg
+
+# Some menu defaults
+set menu-timeout 300
+set submenu-timeout ${menu-timeout}
+isset ${menu-default} || set menu-default exit
+
+# Figure out if client is 64-bit capable
+cpuid --ext 29 && set arch x64 || set arch x86
+cpuid --ext 29 && set archl amd64 || set archl i386
+
+###################### MAIN MENU ####################################
+
+:start
+menu iPXE boot menu
+item --gap --             ------------------------- Operating systems ------------------------------
+item --key b bootstrap    Boot bootstrap node  (Press "B" for shortcut)
+item --key m master       Boot master node     (Press "M" for shortcut)
+item --key w worker       Boot worker node     (Press "W" for shortcut)
+item --gap --             ------------------------- Advanced options -------------------------------
+item --key c config       Configure settings
+item shell                Drop to iPXE shell
+item reboot               Reboot computer
+item
+item --key x exit         Exit iPXE and continue BIOS boot
+choose --timeout 300000 --default ${menu-default} selected || goto cancel
+goto ${selected}
+
+:cancel
+echo You cancelled the menu, dropping you to a shell
+
+:shell
+echo Type 'exit' to get the back to the menu
+shell
+set menu-timeout 0
+set submenu-timeout 0
+goto start
+
+:failed
+echo Booting failed, dropping to shell
+goto shell
+
+:reboot
+reboot
+
+:exit
+exit
+
+:config
+config
+goto start
+
+:back
+set submenu-timeout 0
+clear submenu-default
+goto start
+
+:bootstrap
+kernel http://web.ocp4.adp.localdomain:8008/ipxe/rhcos--installer-kernel-x86_64 ip=ens192:dhcp rd.neednet=1 console=tty0 coreos.inst=yes coreos.inst.install_dev=sda coreos.inst.image_url=http://web.ocp4.adp.localdomain:8008/rhcos/images/latest/bios.raw.gz coreos.inst.ignition_url=http://web.ocp4.adp.localdomain:8008/rhcos/ignitions/bootstrap.ign initrd=rhcos--installer-initramfs-x86_64.img 
+initrd http://web.ocp4.adp.localdomain:8008/ipxe/rhcos--installer-initramfs-x86_64.img
+boot
+
+:master
+kernel http://web.ocp4.adp.localdomain:8008/ipxe/rhcos--installer-kernel-x86_64 ip=ens192:dhcp rd.neednet=1 console=tty0 coreos.inst=yes coreos.inst.install_dev=sda coreos.inst.image_url=http://web.ocp4.adp.localdomain:8008/rhcos/images/latest/bios.raw.gz coreos.inst.ignition_url=http://web.ocp4.adp.localdomain:8008/rhcos/ignitions/master.ign initrd=rhcos--installer-initramfs-x86_64.img 
+initrd http://web.ocp4.adp.localdomain:8008/ipxe/rhcos--installer-initramfs-x86_64.img
+boot
+
+:worker
+kernel http://web.ocp4.adp.localdomain:8008/ipxe/rhcos--installer-kernel-x86_64 ip=ens192:dhcp rd.neednet=1 console=tty0 coreos.inst=yes coreos.inst.install_dev=sda coreos.inst.image_url=http://web.ocp4.adp.localdomain:8008/rhcos/images/latest/bios.raw.gz coreos.inst.ignition_url=http://web.ocp4.adp.localdomain:8008/rhcos/ignitions/worker.ign initrd=rhcos--installer-initramfs-x86_64.img
+initrd http://web.ocp4.adp.localdomain:8008/ipxe/rhcos--installer-initramfs-x86_64.img
+boot
