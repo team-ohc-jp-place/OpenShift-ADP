@@ -11,7 +11,7 @@
 - Master Nodeは、OpenShiftクラスターに *3台* 必要となる。  
 これは内部で動作するetcdが正確にOpenShiftクラスターを管理するためである。
 - Master Nodeは、それぞれ異なるFailure Domain(障害ドメイン)に配備することを強く推奨する。
-- Master Nodeには最小リソース要件 <a href="minimum-master-req">[1]</a> がある。
+- Master Nodeには最小リソース要件 <a name="minimum-master-req">[1]</a> がある。
 - 管理するWorker Nodeの数によってMaster Nodeの推奨スペック <a name="recommended-master-req">[2]</a> は変わる。  
 Master Nodeはスケールアウトしたり、CPUやRAMのサイズを変更することができない。あらかじめクラスターに配備するWorker Nodeの最大数を想定してスペックを決めるよう注意されたい。
 
