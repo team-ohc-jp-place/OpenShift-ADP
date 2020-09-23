@@ -5,23 +5,32 @@
 
 ![ システム構成図](./images/image0001.png)
 
+<br>
+
 ## 3.1 OpenShiftノード構成
 
-| ノード | 台数 | x86_64 CPU (thread/vcpu) <sup>1</sup> | メモリ搭載量 | システムドライブ <sup>2</sup> | 追加ドライブ | 10G NIC (Ports) <sup>3</sup> | 備考 |
-|:--------:|:--------:|:-----------------:|:----------------:|:----------------:|:------------:|:-----------------:|:-----------------:|:-----------------|
-| Master   | 3 | 8  | 32 GB | 120 GiB x2 (RAID 1) | -            | 2 | |
-| Worker   | 3 | 8  | 32 GB | 120 GiB x2 (RAID 1) | -            | 2 | |
-| Infra    | 3 | 8  | 32 GB | 120 GiB x2 (RAID 1) | -            | 2 | |
-| OCS      | 3 | 16 | 48 GB | 120 GiB x2 (RAID 1) | 1 TiB SSD x3 | 2 | |
-
-<br>
-*1 : SMTを有効とする物理サーバー、または仮想サーバーを使う場合は、core = 2 threads = 2 vcpus で換算 <br>
-*2 : すでに冗長化されているストレージを使う場合はRAID 1は構成せず、1ドライブでも構わない <br>
-*3 : 2portでteamingして冗長化<br>
-<br>
 <br>
 
-### (参考)ノードのサイジングのヒント
+| ノード | 台数 | x86_64 CPU <br> (thread/vcpu) <sup>1</sup> | メモリ搭載量 | システムドライブ <sup>2</sup> | 追加ドライブ | 1G NIC <br>  (Ports) <sup>3</sup> | 10G NIC <br> (Ports) <sup>4</sup> | 備考 |
+|:--------:|:--------:|:-----------------:|:----------------:|:----------------:|:------------:|:------------:|:-----------------:|:-----------------:|:-----------------|
+| Master   | 3 | 8  | 32 GB | 120 GiB x2 (RAID 1) | -            | 1 | 2 | |
+| Worker   | 3 | 8  | 32 GB | 120 GiB x2 (RAID 1) | -            | 1 | 2 | |
+| Infra    | 3 | 8  | 32 GB | 120 GiB x2 (RAID 1) | -            | 1 | 2 | |
+| OCS      | 3 | 16 | 48 GB | 120 GiB x2 (RAID 1) | 1 TiB SSD x3 | 1 | 2 | |
+
+<br>
+
+*1 : SMTを有効とする物理サーバー、または仮想サーバーを使う場合は、1 core = 2 threads = 2 vcpus で換算。 <br>
+*2 : すでに冗長化されているストレージを使う場合は1ドライブでも構わない。 <br>
+*3 : PXE boot用。BMC用は必要に応じて適宜用意すること。 <br>
+*4 : bondingによる冗長化を想定。 <br>
+
+<br>
+
+### 【参考】ノードのサイジングのヒント
+
+<br>
+
 #### Master Node
 - [Master Nodeの最小リソース要件](https://access.redhat.com/documentation/ja-jp/openshift_container_platform/4.5/html/installing_on_bare_metal/installing-on-bare-metal#installation-requirements-user-infra_installing-bare-metal)
 - [Master Nodeの推奨スペック](https://access.redhat.com/documentation/ja-jp/openshift_container_platform/4.5/html/scalability_and_performance/master-node-sizing_)<br>
@@ -46,11 +55,16 @@ Master Nodeはスケールアウトしたり、CPUやRAMのサイズを変更す
 #### Bootstrap Node
 - [Bootstrap Nodeの最小リソース要件](https://access.redhat.com/documentation/ja-jp/openshift_container_platform/4.5/html/installing_on_bare_metal/installing-on-bare-metal#installation-requirements-user-infra_installing-bare-metal)
 
+<br>
+
 ---
+
+<br>
+
 ## 3.2 ネットワーク構成
 
 
-| ノード | 台数 | x86_64 CPU (thread/vcpu) <sup>1</sup> | メモリ搭載量 | システムドライブ <sup>2</sup> | 追加ドライブ | 10G NIC (Ports) <sup>3</sup> | 備考 |
+| ノード | 台数 | x86_64 CPU (thread/vcpu) <sup>1</sup> | メモリ搭載量 | システムドライブ <sup>2</sup> | 追加ドライブ | 1G NIC (Ports) <sup>3</sup> | 10G NIC (Ports) <sup>4</sup> | 備考 |
 |:--------:|:--------:|:-----------------:|:----------------:|:----------------:|:------------:|:-----------------:|:-----------------:|:-----------------|
 
 | Bootstrap| 1 | 4  | 16 GB | 120 GiB x2 (RAID 1) | -            | 4 | クラスタが構築出来たら認証サーバ等別の役割に切り替える |
