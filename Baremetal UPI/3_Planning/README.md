@@ -1,19 +1,60 @@
-# OpenShift Container Platform 4 Baremetal UPI の計画
+# 3章 : OpenShift Container Platform 4 Baremetal UPI の設計
 
-## OpenShift Container Platform 4.5 システム構成
-
-### システム構成図
+本章はOpenShift Container Platform 4のクラスタをBaremetalでインストールするための設計について説明する。
+本ドキュメントでは下図のようなOpenShiftクラスタを例とし、この構成を構築するための設計と手順を紹介する。
 
 ![ システム構成図](./images/image0001.png)
 
-### ノードのサイジング
+## 3.1 OpenShiftノード構成
+
+| ノード | 台数 | x86_64 CPU (thread/vcpu) <sup>1</sup> | メモリ搭載量 | システムドライブ <sup>2</sup> | 追加ドライブ | 10G NIC (Ports) <sup>3</sup> | 備考 |
+|:--------:|:--------:|:-----------------:|:----------------:|:----------------:|:------------:|:-----------------:|:-----------------:|:-----------------|
+| Master   | 3 | 8  | 32 GB | 120 GiB x2 (RAID 1) | -            | 2 | |
+| Worker   | 3 | 8  | 32 GB | 120 GiB x2 (RAID 1) | -            | 2 | |
+| Infra    | 3 | 8  | 32 GB | 120 GiB x2 (RAID 1) | -            | 2 | |
+| OCS      | 3 | 16 | 48 GB | 120 GiB x2 (RAID 1) | 1 TiB SSD x3 | 2 | |
+
+<br>
+*1 : SMTを有効とする物理サーバー、または仮想サーバーを使う場合は、core = 2 threads = 2 vcpus で換算 <br>
+*2 : すでに冗長化されているストレージを使う場合はRAID 1は構成せず、1ドライブでも構わない <br>
+*3 : 2portでteamingして冗長化<br>
+<br>
+<br>
+
+### (参考)ノードのサイジングのヒント
 #### Master Node
-- Master Nodeは、OpenShiftクラスターに *3台* 必要となる。  
-これは内部で動作するetcdが正確にOpenShiftクラスターを管理するためである。
-- Master Nodeは、それぞれ異なるFailure Domain(障害ドメイン)に配備することを強く推奨する。
-- Master Nodeには最小リソース要件 <a name="minimum-master-req">[1]</a> がある。
-- 管理するWorker Nodeの数によってMaster Nodeの推奨スペック <a name="recommended-master-req">[2]</a> は変わる。  
-Master Nodeはスケールアウトしたり、CPUやRAMのサイズを変更することができない。あらかじめクラスターに配備するWorker Nodeの最大数を想定してスペックを決めるよう注意されたい。
+- [Master Nodeの最小リソース要件](https://access.redhat.com/documentation/ja-jp/openshift_container_platform/4.5/html/installing_on_bare_metal/installing-on-bare-metal#installation-requirements-user-infra_installing-bare-metal)
+- [Master Nodeの推奨スペック](https://access.redhat.com/documentation/ja-jp/openshift_container_platform/4.5/html/scalability_and_performance/master-node-sizing_)<br>
+管理対象のWorker Nodeの数で変わる。
+Master Nodeはスケールアウトしたり、CPUやRAMのサイズを変更することができないため、あらかじめクラスターに配備するWorker Nodeの最大数を想定してスペックを決める。<br>
+
+#### Worker Node
+- [Worker Nodeの最小リソース要件](https://access.redhat.com/documentation/ja-jp/openshift_container_platform/4.5/html/installing_on_bare_metal/installing-on-bare-metal#installation-requirements-user-infra_installing-bare-metal)
+- 実際には全ての稼働するアプリケーションPodが求めるリソースが必要となるので、推奨スペックを言うことは難しい。  
+あらかじめ稼働するアプリケーションが全て分かっている場合は必要なリソースが計算できるが、分からない場合は暫定的にスペックを決めスケールアウトする方針がよい。
+
+#### Infra Node
+- Infra Nodeの最小リソース要件はWorker Nodeに則する
+- [Infra Nodeの推奨スペック](https://access.redhat.com/documentation/ja-jp/openshift_container_platform/4.5/html/scalability_and_performance/infrastructure-node-sizing_)<br>
+管理対象のWorker Nodeの数で変わる。
+
+
+#### Storage Node
+- [Storage Nodeの最小リソース要件](https://access.redhat.com/documentation/en-us/red_hat_openshift_container_storage/4.5/html-single/planning_your_deployment/index#resource-requirements_rhocs)
+- ドライブが増えるごとに追加リソースが必要になることに注意。
+
+#### Bootstrap Node
+- [Bootstrap Nodeの最小リソース要件](https://access.redhat.com/documentation/ja-jp/openshift_container_platform/4.5/html/installing_on_bare_metal/installing-on-bare-metal#installation-requirements-user-infra_installing-bare-metal)
+
+---
+## 3.2 ネットワーク構成
+
+
+| ノード | 台数 | x86_64 CPU (thread/vcpu) <sup>1</sup> | メモリ搭載量 | システムドライブ <sup>2</sup> | 追加ドライブ | 10G NIC (Ports) <sup>3</sup> | 備考 |
+|:--------:|:--------:|:-----------------:|:----------------:|:----------------:|:------------:|:-----------------:|:-----------------:|:-----------------|
+
+| Bootstrap| 1 | 4  | 16 GB | 120 GiB x2 (RAID 1) | -            | 4 | クラスタが構築出来たら認証サーバ等別の役割に切り替える |
+
 
 #### Worker Node
 - Worker Nodeは、OpenShiftクラスターに *2台以上* 必要となる。  
@@ -23,16 +64,16 @@ Master Nodeはスケールアウトしたり、CPUやRAMのサイズを変更す
 - 実際には全ての稼働するアプリケーションPodが求めるリソースが必要となるので、推奨スペックを言うことは難しい。  
 あらかじめ稼働するアプリケーションが全て分かっている場合は必要なリソースが計算できるが、分からない場合は暫定的にスペックを決め、Node数をスケールアウトする方針がよいだろう。
 
-#### Infra Node
+#### Infra Node (Option)
 - Infra Nodeは、オプションのコンポーネントであり、OpenShiftクラスターに必須ではない。
 - Infra Nodeを配備する場合は、*3台以上* をそれぞれ異なるFailure Domainに配備することを推奨する。
 - 管理するWorker Nodeの数によってInfra Nodeの推奨スペック <a name="recommended-infra-req">[3]</a> は変わる。  
 
-#### Storage Node
+#### Storage Node (Option)
 - Storage Nodeは、オプションのコンポーネントであり、OpenShiftクラスターに必須ではない。
 - Storage Nodeでは、OpenShift Container Storage 4が稼働する。
 - Storage Nodeを配備する場合は、*3台以上* をそれぞれ異なるFailure Domainに配備することが必要となる。
-工事中
+
 
 -----
 工事中
@@ -44,11 +85,6 @@ Master Nodeはスケールアウトしたり、CPUやRAMのサイズを変更す
 ### システム構成情報 (本番環境 : 100VM)
 #### Red Hat OpenStack& Ceph Storage
 
-| サーバ役割 | 台数 | x86_64 CPU コア数 | メモリ搭載量 | システムHDD | 追加HDD | 1G NIC (ポート数) | 10G NIC(ポート数) | 備考 |
-|:--------:|:----:|:-----------------:|:----------------:|:----------------:|:------------:|:-----------------:|:-----------------:|:-----------------|
-| 仮想ホスト | 1 | 8 | 128 GB | SAS/SATA SSD <br> 120 GB x 2 | SAS/SATA HDD <br> 1 TB x 2 | 5 | 0 | Director は、KVMゲストVMとして構築 . <br> 余剰なリソースは、監視サーバ等で利用可能 |
-| Controller <br> Ceph MON/MGR| 3 | 8 | 128 GB | SAS/SATA SSD <br> 120 GB x 2 | N/A | 6 | 6 |  |
-| Compute <br> Ceph OSD| 3 | 16 | 96 GB | SAS/SATA SSD <br>  120 GB x 2 | \* journal : NVMe SSD 800 GB x 1 <br> \* data : SAS/SATA SSD 1.92 TB x 8| 4 | 8 | より大規模な環境とする場合、CPUコア数、メモリ搭載量を増加させる。<br>  \* cinder-volume 6,000 GiB <br> \* cinder-backup 6,000 GiB <br> \* glance-image 1,000 GiB <br> \* gnocchi-metrics 1,000 GiB <br> TOTAL:14,000 GiB |
 
 ### サービス／コンポーネントの役割
 
@@ -292,11 +328,7 @@ Ceph OSD 用のメモリは、1 osd あたり 5 GB を見積もります。し�
 * 10GE ネットワークには、Jumboframe を設定（OSに設定すべきMTUサイズを確認する）
 
 ### footnote
-<sup>[[1]](#minimum-master-req): https://access.redhat.com/documentation/ja-jp/openshift_container_platform/4.5/html/installing_on_bare_metal/installing-on-bare-metal#installation-requirements-user-infra_installing-bare-metal
 
-<sup>[[2]](#recommended-master-req): https://access.redhat.com/documentation/ja-jp/openshift_container_platform/4.5/html/scalability_and_performance/master-node-sizing_
-
-<sup>[[3]](#recommended-infra-req): https://access.redhat.com/documentation/ja-jp/openshift_container_platform/4.5/html/scalability_and_performance/infrastructure-node-sizing_
 
 
 
