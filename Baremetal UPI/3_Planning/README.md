@@ -1,58 +1,90 @@
 # 3章 : OpenShift Container Platform 4 Baremetal UPI の設計
 
 本章はOpenShift Container Platform 4のクラスタをBaremetalでインストールするための設計について説明する。
+
 本ドキュメントでは下図のようなOpenShiftクラスタを例とし、この構成を構築するための設計と手順を紹介する。
 
-![ システム構成図](./images/image0001.png)
+![ システム構成図](./images/image_001.png)
 
 <br>
 
-## 3.1 OpenShiftノード構成
+---
 
 <br>
 
-| ノード | 台数 | x86_64 CPU <br> (thread/vcpu) <sup>1</sup> | メモリ搭載量 | システムドライブ <sup>2</sup> | 追加ドライブ | 1G NIC <br>  (Ports) <sup>3</sup> | 10G NIC <br> (Ports) <sup>4</sup> | 備考 |
+## 3.1. OpenShiftノード構成
+
+<br>
+
+### 3.1.1. ノード一覧
+
+<br>
+
+| ノード || 台数 || x86_64 CPU <br> (thread/vcpu) <sup>1</sup> | メモリ搭載量 | システムドライブ <sup>2</sup> | 追加ドライブ <sup>3</sup>| 10G NIC <br> (Ports) <sup>4</sup> | 備考 |
 |:--------:|:--------:|:-----------------:|:----------------:|:----------------:|:------------:|:------------:|:-----------------:|:-----------------:|:-----------------|
-| Master   | 3 | 8  | 32 GB | 120 GiB x2 (RAID 1) | -            | 1 | 2 | |
-| Worker   | 3 | 8  | 32 GB | 120 GiB x2 (RAID 1) | -            | 1 | 2 | |
-| Infra    | 3 | 8  | 32 GB | 120 GiB x2 (RAID 1) | -            | 1 | 2 | |
-| OCS      | 3 | 16 | 48 GB | 120 GiB x2 (RAID 1) | 1 TiB SSD x3 | 1 | 2 | |
+| Master   || 3 || 8  | 32 GB | 120 GiB | -            | 1 |
+| Worker   || 3 || 8  | 32 GB | 120 GiB | -            | 1 |
+| Infra    || 3 || 8  | 32 GB | 120 GiB | -            | 1 |
+| Storage  || 3 || 16 | 48 GB | 120 GiB | 1 TiB SSD x3 | 1 | 合計 3 TiB の Persistent Storage
+| Bootstrap|| 1 || 4  | 16 GB | 120 GiB | -            | 1 | クラスターが構築できたら<br>認証サーバ等別の役割に切り替える
 
 <br>
 
-*1 : SMTを有効とする物理サーバー、または仮想サーバーを使う場合は、1 core = 2 threads = 2 vcpus で換算。 <br>
-*2 : すでに冗長化されているストレージを使う場合は1ドライブでも構わない。 <br>
-*3 : PXE boot用。BMC用は必要に応じて適宜用意すること。 <br>
-*4 : bondingによる冗長化を想定。 <br>
+&emsp; *1 : SMTを有効とする物理サーバー、または仮想サーバーを使う場合は、1 core = 2 threads = 2 vcpus で換算。 <br>
+&emsp; *2 : 必要に応じて適宜2ドライブでRAID 1を構成するなどして冗長化する。 <br>
+&emsp; *3 : Persistent Storageとして必要となる容量を搭載する。詳細は下記サイジングのヒントを参照。 <br>
+&emsp; *4 : 必要に応じて適宜Bondingなどで冗長化、帯域幅の拡張を行う。BMC用は必要に応じて適宜用意する。 <br>
+
+<br>
+<br>
+
+- OpenShift クラスターは、Master Node と Worker Node で構成される。
+- オプションで Infrastructure Node(Infra Node) と Storage Node(OCS) ノードも加えることで、よりOpenShiftの使用に適したクラスターになるため、本構成にはこれらも含めて構築する。<br>
+Infra Node と Storage Node は、最初 Worker Node として立ち上げ、クラスター構築後にラベルを貼ることでそれぞれの役割となる。
+- また、クラスター構築時に Master Node を起動するための Bootstrap Node が一時的に必要となる。<br>
+Master Node が立ち上がれば Bootstrap Node は不要となるので、別の役割のサーバーとして切り替える事ができる。
 
 <br>
 
-### 【参考】ノードのサイジングのヒント
+### 3.1.2. 各ノードのサイジング
 
 <br>
 
 #### Master Node
+- Master Nodeは **3台** が必要
 - [Master Nodeの最小リソース要件](https://access.redhat.com/documentation/ja-jp/openshift_container_platform/4.5/html/installing_on_bare_metal/installing-on-bare-metal#installation-requirements-user-infra_installing-bare-metal)
-- [Master Nodeの推奨スペック](https://access.redhat.com/documentation/ja-jp/openshift_container_platform/4.5/html/scalability_and_performance/master-node-sizing_)<br>
+- [Master Nodeの推奨スペック](https://access.redhat.com/documentation/ja-jp/openshift_container_platform/4.5/html/scalability_and_performance/master-node-sizing_) <br>
 管理対象のWorker Nodeの数で変わる。
-Master Nodeはスケールアウトしたり、CPUやRAMのサイズを変更することができないため、あらかじめクラスターに配備するWorker Nodeの最大数を想定してスペックを決める。<br>
+Master Nodeはスケールアウトしたり、CPUやRAMのサイズを変更することができないため、あらかじめクラスターに配備するWorker Nodeの最大数を想定してスペックを決める。 <br>
 
 #### Worker Node
+- Worker Nodeは **2台以上** が必要 <br>
+本構成では3つのFailure Domainで分散するため3台とする。
 - [Worker Nodeの最小リソース要件](https://access.redhat.com/documentation/ja-jp/openshift_container_platform/4.5/html/installing_on_bare_metal/installing-on-bare-metal#installation-requirements-user-infra_installing-bare-metal)
-- 実際には全ての稼働するアプリケーションPodが求めるリソースが必要となるので、推奨スペックを言うことは難しい。  
+- Worker Nodeの推奨スペック <br>
+実際にはWorker Nodeで稼働するアプリケーションPodが求めるリソースに依存するので、一概に推奨スペックは言えない。  
 あらかじめ稼働するアプリケーションが全て分かっている場合は必要なリソースが計算できるが、分からない場合は暫定的にスペックを決めスケールアウトする方針がよい。
 
 #### Infra Node
-- Infra Nodeの最小リソース要件はWorker Nodeに則する
+- Infra Nodeは **3台以上** が必要 <br>
+本構成では3台で構成する。
+- Infra Nodeの最小リソース要件はWorker Nodeに則するが、最小要件ではリソース不足でクラスターサービスが稼働しない恐れがある。
+推奨スペックのリソースを用意すること。
 - [Infra Nodeの推奨スペック](https://access.redhat.com/documentation/ja-jp/openshift_container_platform/4.5/html/scalability_and_performance/infrastructure-node-sizing_)<br>
 管理対象のWorker Nodeの数で変わる。
 
 
-#### Storage Node
-- [Storage Nodeの最小リソース要件](https://access.redhat.com/documentation/en-us/red_hat_openshift_container_storage/4.5/html-single/planning_your_deployment/index#resource-requirements_rhocs)
-- ドライブが増えるごとに追加リソースが必要になることに注意。
+#### Storage Node (OCS Node)
+- Storage Nodeは **3台以上** が必要 <br>
+本構成では3台で構成する。
+- [Storage Nodeの最小リソース要件](https://access.redhat.com/documentation/en-us/red_hat_openshift_container_storage/4.5/html-single/planning_your_deployment/index#resource-requirements_rhocs)<br>
+ドライブが増えるごとに追加でリソースが必要になることに注意。
+- 4 TiB以下のSSDをドライブとして使用できる。
+- OpenShift Container Storageでは、3 Nodeにまたがって三重でレプリケーションして冗長化する。
+したがって、3 Node全てにPersistent Storageとして使用する容量分のドライブを搭載すること。
 
 #### Bootstrap Node
+- Bootstrap Nodeは **1台** が必要 <br>
 - [Bootstrap Nodeの最小リソース要件](https://access.redhat.com/documentation/ja-jp/openshift_container_platform/4.5/html/installing_on_bare_metal/installing-on-bare-metal#installation-requirements-user-infra_installing-bare-metal)
 
 <br>
@@ -61,13 +93,92 @@ Master Nodeはスケールアウトしたり、CPUやRAMのサイズを変更す
 
 <br>
 
-## 3.2 ネットワーク構成
+## 3.2 補助サーバー
 
+<br>
 
-| ノード | 台数 | x86_64 CPU (thread/vcpu) <sup>1</sup> | メモリ搭載量 | システムドライブ <sup>2</sup> | 追加ドライブ | 1G NIC (Ports) <sup>3</sup> | 10G NIC (Ports) <sup>4</sup> | 備考 |
-|:--------:|:--------:|:-----------------:|:----------------:|:----------------:|:------------:|:-----------------:|:-----------------:|:-----------------|
+### 3.2.1. 補助サーバーの一覧
 
-| Bootstrap| 1 | 4  | 16 GB | 120 GiB x2 (RAID 1) | -            | 4 | クラスタが構築出来たら認証サーバ等別の役割に切り替える |
+<br>
+
+| ノード || 台数 || x86_64 CPU <br> (thread/vcpu) <sup>1</sup> | メモリ搭載量 | システムドライブ <sup>2</sup> | 追加ドライブ | 10G NIC <br> (Ports) <sup>3</sup> | 備考 |
+|:--------:|:--------:|:-----------------:|:----------------:|:----------------:|:------------:|:------------:|:-----------------:|:-----------------:|:-----------------|
+| Load Balancer|| 2 || 2  | 4 GB | 120 GiB | -            | 1 | 
+| Bastion      || 1 || 2  | 4 GB | 120 GiB | -            | 1 |
+
+<br>
+
+&emsp; *1 : SMTを有効とする物理サーバー、または仮想サーバーを使う場合は、1 core = 2 threads = 2 vcpus で換算。 <br>
+&emsp; *2 : 必要に応じて適宜2ドライブでRAID 1を構成するなどして冗長化する。 <br>
+&emsp; *3 : 必要に応じて適宜Bondingなどで冗長化、帯域幅の拡張を行う。BMC用は必要に応じて適宜用意する。 <br>
+
+<br>
+<br>
+
+- UPI で OpenShiftクラスターを構築する際には、Load Balancer と DNS が必要となる。環境内に既存の LB や DNS があればそれを利用しても構わない。<br>
+本構成ではこれらが無い環境でOpenShiftクラスターを構築する想定で、これらのサーバーも構築することとする。
+
+#### Load Balancer
+- Load Balancer は単独のサーバー2台で冗長化して構成する。
+- OS は RHEL 8 を使用する。
+
+#### Bastion
+- DNS についてはインストール作業用の Bastion サーバーで稼働させることとする。<br>
+DNS はクラスター構築後の運用でも必要となるため、必要に応じて適宜冗長化などしても構わない。
+
+- 本構成では DHCP も Bastion サーバーで稼働させる。DHCP を使用する目的は次の通り。
+  - 各ノードの NIC が持つ MAC アドレスに対応して固定のIPアドレスを割り当てる。
+  - iPXE を使ってノードに RHEL CoreOS(RHEL COS) をインストールして boot する。
+
+- PXE boot するための RHEL COS の PXE Kernel や RAW イメージ、また OpenShift クラスター構築時に利用する ignition file の置き場所として Web サーバー を使用する。本構成では ngix とする。
+
+- OS は RHEL 8 を使用する。
+
+<br>
+
+---
+
+<br>
+
+## 3.3 ネットワーク構成
+
+<br>
+
+### 3.3.1. ノード間のネットワーク
+
+<br>
+
+| ネットワーク || 本数 || CIDR | 帯域幅 <sup>1</sup> | 備考 |
+|:----------:|:----:|:---:|:-------------------:|:----:|:----:|:----|
+| Node Network || 1 || 172.16.0.0/24  | 10 Gbit |  |
+
+<br>
+
+&emsp; *1 : 必要に応じて適宜Bondingなどで冗長化、帯域幅の拡張を行う。BMC用は必要に応じて適宜用意する。 <br>
+
+<br>
+<br>
+
+- OpenShift クラスターではノード間のネットワークは基本的に1本である。<br>
+※ [Multus](https://docs.openshift.com/container-platform/4.5/networking/multiple_networks/understanding-multiple-networks.html) を利用すれば複数のネットワークを使う価値があるが、本構成では使用しないこととする。
+- 全てのノード/サーバーからインターネットに通信できるよう、適宜外部にルーティングしておく。
+
+<br>
+
+### 3.3.2. IPアドレス
+
+| ノード/サーバー | IPアドレス | &emsp;&emsp;&emsp; | ノード/サーバー | IPアドレス |
+|:-------------:|:---------:|:---------:|:-------------:|:---------:|
+| Bootstrap Node| 172.16.0.11/24 || Storage Node 1 | 172.16.0.51/24 |
+| Master Node 1 | 172.16.0.21/24 || Storage Node 2 | 172.16.0.52/24 |
+| Master Node 2 | 172.16.0.22/24 || Storage Node 3 | 172.16.0.53/24 |
+| Master Node 3 | 172.16.0.23/24 ||||
+| Worker Node 1 | 172.16.0.31/24 || Bastion        | 172.16.0.101/24 |
+| Worker Node 2 | 172.16.0.32/24 || Load Balancer 1| 172.16.0.110/24 |
+| Worker Node 3 | 172.16.0.33/24 || Load Balancer 2| 172.16.0.111/24 |
+| Infra Node 1  | 172.16.0.41/24 ||||
+| Infra Node 2  | 172.16.0.42/24 ||||
+| Infra Node 3  | 172.16.0.43/24 ||||
 
 
 #### Worker Node
@@ -78,12 +189,12 @@ Master Nodeはスケールアウトしたり、CPUやRAMのサイズを変更す
 - 実際には全ての稼働するアプリケーションPodが求めるリソースが必要となるので、推奨スペックを言うことは難しい。  
 あらかじめ稼働するアプリケーションが全て分かっている場合は必要なリソースが計算できるが、分からない場合は暫定的にスペックを決め、Node数をスケールアウトする方針がよいだろう。
 
-#### Infra Node (Option)
+#### Infra Node
 - Infra Nodeは、オプションのコンポーネントであり、OpenShiftクラスターに必須ではない。
 - Infra Nodeを配備する場合は、*3台以上* をそれぞれ異なるFailure Domainに配備することを推奨する。
 - 管理するWorker Nodeの数によってInfra Nodeの推奨スペック <a name="recommended-infra-req">[3]</a> は変わる。  
 
-#### Storage Node (Option)
+#### Storage Node
 - Storage Nodeは、オプションのコンポーネントであり、OpenShiftクラスターに必須ではない。
 - Storage Nodeでは、OpenShift Container Storage 4が稼働する。
 - Storage Nodeを配備する場合は、*3台以上* をそれぞれ異なるFailure Domainに配備することが必要となる。
