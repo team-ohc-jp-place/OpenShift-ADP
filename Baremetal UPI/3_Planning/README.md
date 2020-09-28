@@ -6,19 +6,12 @@
 
 ![システム構成図](./images/image_001.png)
 
-<br>
-
 ---
-
-<br>
-
 ## 3.1. OpenShiftノード構成
 
 <br>
 
 ### 3.1.1. ノード一覧
-
-<br>
 
 | ノード | 台数 | x86_64 CPU <br> (thread/vcpu) <sup>1</sup> | メモリ搭載量 | システムドライブ <sup>2</sup> | 追加ドライブ <sup>3</sup>| 10G NIC <br> (Ports) <sup>4</sup> | 備考 |
 |:--------:|:--------:|:-----------------:|:----------------:|:----------------:|:------------:|:------------:|:-----------------:|:-----------------:|:-----------------|
@@ -47,9 +40,6 @@ Master Node が立ち上がれば Bootstrap Node は不要となるので、別�
 <br>
 
 ### 3.1.2. 各ノードのサイジング
-
-<br>
-
 #### Master Node
 - Master Nodeは **3台** が必要
 - [Master Nodeの最小リソース要件](https://access.redhat.com/documentation/ja-jp/openshift_container_platform/4.5/html/installing_on_bare_metal/installing-on-bare-metal#installation-requirements-user-infra_installing-bare-metal)
@@ -90,16 +80,11 @@ Master Nodeはスケールアウトしたり、CPUやRAMのサイズを変更す
 <br>
 
 ---
-
-<br>
-
 ## 3.2 補助サーバー
 
 <br>
 
 ### 3.2.1. 補助サーバーの一覧
-
-<br>
 
 | ノード | 台数 | x86_64 CPU <br> (thread/vcpu) <sup>1</sup> | メモリ搭載量 | システムドライブ <sup>2</sup> | 追加ドライブ | 10G NIC <br> (Ports) <sup>3</sup> | 備考 |
 |:--------:|:--------:|:-----------------:|:----------------:|:----------------:|:------------:|:------------:|:-----------------:|:-----------------:|:-----------------|
@@ -133,13 +118,7 @@ DNS はクラスター構築後の運用でも必要となるため、必要に�
 - PXE boot するための RHEL COS の PXE Kernel や RAW イメージ、また OpenShift クラスター構築時に利用する ignition file の置き場所として Web サーバー を使用する。本構成では ngix とする。
 
 - OS は RHEL 8 を使用する。
-
-<br>
-
 ---
-
-<br>
-
 ## 3.3 ネットワーク構成
 
 <br>
@@ -177,11 +156,11 @@ DNS はクラスター構築後の運用でも必要となるため、必要に�
 | Worker Node 2 | 172.16.0.32/24 || Load Balancer 1| 172.16.0.110/24 |
 | Worker Node 3 | 172.16.0.33/24 || Load Balancer 2| 172.16.0.111/24 |
 | Infra Node 1  | 172.16.0.41/24 ||||
-| Infra Node 2  | 172.16.0.42/24 ||||
+| Infra Node 2  | 172.16.0.42/24 || Router         | 172.16.0.1/24 |
 | Infra Node 3  | 172.16.0.43/24 ||||
 
 
-#### Worker Node
+### 3.3.3. OpenShift クラスターのネットワーク
 - Worker Nodeは、OpenShiftクラスターに *2台以上* 必要となる。  
 これは1台の障害時に他のNodeでアプリケーションPodを再稼働できるよう冗長化するためである。
 - Worker Nodeは、それぞれ異なるFailure Domain(障害ドメイン)に配備することを強く推奨する。
