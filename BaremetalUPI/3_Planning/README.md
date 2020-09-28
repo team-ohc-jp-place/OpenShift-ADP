@@ -120,9 +120,6 @@ DNS はクラスター構築後の運用でも必要となるため、必要に�
 
 ## 3.3 ネットワーク構成
 ### 3.3.1. ノード間のネットワーク
-
-<br>
-
 | ネットワーク | 本数 | CIDR | 帯域幅 <sup>1</sup> | 備考 |
 |:----------:|:----:|:---:|:----:|:----|
 | Node Network | 1 | 172.16.0.0/24  | 10 Gbit |
@@ -140,39 +137,45 @@ DNS はクラスター構築後の運用でも必要となるため、必要に�
 
 <br>
 
-### 3.3.2. IPアドレス
+### 3.3.2. 各ノード/サーバーのIPアドレス
 
 | ノード/サーバー | IPアドレス | &emsp;&emsp;&emsp; | ノード/サーバー | IPアドレス |
 |:-------------:|:---------:|:---------:|:-------------:|:---------:|
-| Bootstrap Node| 172.16.0.11/24 || Storage Node 1 | 172.16.0.51/24 |
-| Master Node 1 | 172.16.0.21/24 || Storage Node 2 | 172.16.0.52/24 |
-| Master Node 2 | 172.16.0.22/24 || Storage Node 3 | 172.16.0.53/24 |
-| Master Node 3 | 172.16.0.23/24 ||||
-| Worker Node 1 | 172.16.0.31/24 || Bastion        | 172.16.0.101/24 |
-| Worker Node 2 | 172.16.0.32/24 || Load Balancer 1| 172.16.0.110/24 |
-| Worker Node 3 | 172.16.0.33/24 || Load Balancer 2| 172.16.0.111/24 |
-| Infra Node 1  | 172.16.0.41/24 ||||
-| Infra Node 2  | 172.16.0.42/24 || Router         | 172.16.0.1/24 |
-| Infra Node 3  | 172.16.0.43/24 ||||
+| Bootstrap Node| 172.16.0.11 || Storage Node 1 | 172.16.0.51 |
+| Master Node 1 | 172.16.0.21 || Storage Node 2 | 172.16.0.52 |
+| Master Node 2 | 172.16.0.22 || Storage Node 3 | 172.16.0.53 |
+| Master Node 3 | 172.16.0.23 ||||
+| Worker Node 1 | 172.16.0.31 || Bastion        | 172.16.0.101 |
+| Worker Node 2 | 172.16.0.32 || Load Balancer 1| 172.16.0.110 |
+| Worker Node 3 | 172.16.0.33 || Load Balancer 2| 172.16.0.111 |
+| Infra Node 1  | 172.16.0.41 ||||
+| Infra Node 2  | 172.16.0.42 || Router         | 172.16.0.1 |
+| Infra Node 3  | 172.16.0.43 ||||
 
+<br>
 
 ### 3.3.3. OpenShift クラスターのネットワーク
-- Worker Nodeは、OpenShiftクラスターに *2台以上* 必要となる。  
-これは1台の障害時に他のNodeでアプリケーションPodを再稼働できるよう冗長化するためである。
-- Worker Nodeは、それぞれ異なるFailure Domain(障害ドメイン)に配備することを強く推奨する。
-- Worker Nodeには最小リソース要件 <a name="minimum-master-req">[1]</a> がある。
-- 実際には全ての稼働するアプリケーションPodが求めるリソースが必要となるので、推奨スペックを言うことは難しい。  
-あらかじめ稼働するアプリケーションが全て分かっている場合は必要なリソースが計算できるが、分からない場合は暫定的にスペックを決め、Node数をスケールアウトする方針がよいだろう。
+| ネットワーク | 本数 | CIDR | 帯域幅 | 備考 |
+|:----------:|:----:|:---:|:----:|:----|
+| Cluster Network | 1 | 10.128.0.0/14  | - |
+| Service Network | 1 | 172.30.0.0/16  | - |
 
-#### Infra Node
-- Infra Nodeは、オプションのコンポーネントであり、OpenShiftクラスターに必須ではない。
-- Infra Nodeを配備する場合は、*3台以上* をそれぞれ異なるFailure Domainに配備することを推奨する。
-- 管理するWorker Nodeの数によってInfra Nodeの推奨スペック <a name="recommended-infra-req">[3]</a> は変わる。  
+<br>
+<br>
 
-#### Storage Node
-- Storage Nodeは、オプションのコンポーネントであり、OpenShiftクラスターに必須ではない。
-- Storage Nodeでは、OpenShift Container Storage 4が稼働する。
-- Storage Nodeを配備する場合は、*3台以上* をそれぞれ異なるFailure Domainに配備することが必要となる。
+
+- OpenShift クラスター内部では **Cluster Network** と **Service Network** が必要となる。
+- これらのネットワークは、クラスター構築時に Cluster Network Operator によって自動で構成される OpenShift SDN によって提供される、オーバーレイネットワークである。<br>
+そのため構築時にあらかじめ用意する必要はなく、OpenShift インストール時に使用する install-config.yaml ファイルで指定するだけで良い。
+
+---
+<br>
+
+## 3.4 ストレージ構成
+### 3.4.1. OpenShift Container Storage 
+- OpenShift Container Storage (OCS) は、
+
+### 3.4.2. OpenShift Container Storage
 
 
 -----
