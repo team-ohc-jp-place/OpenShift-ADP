@@ -1,6 +1,24 @@
 # 1. はじめに
 
-この手順では、`UPI(User Provisioned Infrastructure)`を使って `OCP(OpenShift Container Platform)`の環境を構築していきます。省略系の`OCP`だとわかりにくいので、ここでは`OpenShift`と呼ぶ事にします。
+この文書では、`UPI(User Provisioned Infrastructure)`を使って `OCP(OpenShift Container Platform)`の環境を構築していきます。省略系の`OCP`だとわかりにくいので、ここでは`OpenShift`と呼ぶ事にします。
+
+本文書は本章も含めて、合計4章で構成します。
+
+### 1. はじめに(本章)
+本文書のテーマであるOpenShiftのクラスターインストールと、本文書内の手順で行う内容を簡単に紹介します。
+ 
+### 2. [OpenShiftの基礎](../2_Overview/)
+クラスターインストールを行ううえで知っておくべき、OpenShift(およびベースとなるKubernetes)の基礎知識を説明します。
+
+### 3. [クラスターインストールの計画](../3_Planning/)
+インストールするクラスターの設計や、インストールに必要な周辺サービスの設定を説明します。
+
+### 4. [クラスターインストールの実行](../4_Installation/)
+クラスターインストールを実行する手順を順番に説明します。
+
+<br>
+
+---
 
 ## 1-1. OpenShiftとは
 
@@ -17,13 +35,13 @@
 ## 1-2. インストール方法
 `OpenShift`のインストール方法は2つに大別されます。
 
-### UPIインストール
+### 1-2-1. UPIインストール
 
 `UPI(User Provisioned Infrastructure)`インストールとは、ユーザーが自分で `OpenShift`の環境構築に必要な、OSをインストールしたノードや、`DNS`の設定、ロードバランサーなどの環境をまず整え、その上にソフトウェアとしての`OpenShift`(`Kubernetes`と、運用に必要な各種ツール)をインストールする方法です。
 
-### IPIインストール
+### 1-2-2. IPIインストール
 
-`UPI`インストールの対義語として`IPI(Infrastracture Provisioned Install)`という言葉があります。こちらは、`AWS`、`Azure`、`GCP`のような Public Cloud Providerが持っているインフラ構築用の APIを使用して `UPI`で手作業で行っていた、ノードの作成、ロードバランサーの設定、`DNS`の設定等を`OpenShift`のインストーラーが自動で行う方法です。
+`UPI`インストールの対義語として`IPI(Installer Provisioned Infrastracture)`という言葉があります。こちらは、`AWS`、`Azure`、`GCP`のような Public Cloud Providerが持っているインフラ構築用の APIを使用して `UPI`で手作業で行っていた、ノードの作成、ロードバランサーの設定、`DNS`の設定等を`OpenShift`のインストーラーが自動で行う方法です。
 
 正確を期すと、`Public Cloud Provider`のアカウントを準備しておく事と、`OpenShift`で使用するドメインの取得と取得したドメインを、その`Public Cloud Provider`の`DNS`サービスに登録しておく事は事前にする必要があります。
 
@@ -33,7 +51,7 @@
 
 `IPI`インストールができる環境は、`DNSサーバー`や`Load Balancer`や、ネットワークの構成をインストーラーからAPIを使用して構築・構成する必要があります。そのためIPIがサポートしている環境は`AWS`や`Azure`、`GCP`等の環境に限られています。が、後述しますが`IPI`の意味する所は最近、少し広がってきたようで、`Baremetal IPI` という言葉も出てきました。
 
-### IPIとUPIインストール
+### 1-2-3. IPIとUPI
 
 物理環境では厳密な意味での完全な`IPI`インストールというのはあり得ません。例えば物理環境では、少なくてもルーターやサーバーを設置してケーブルを配線するという環境準備が必要です。
 
@@ -50,4 +68,4 @@
 
 `BareMetal`と書いていますが、仮想マシンを物理マシンと同等とみなせる仮想化環境でも手順は同じです。
 
-※`VMware`環境の場合は、`OpenShift` 4.5から、`VMWare vSphere IPI`インストールという方式が出てきました。機会があれば別記事で触れたいと思います。
+※`VMware`環境の場合は、`OpenShift` 4.5から、`VMWare vSphere IPI`インストールという方式が出てきましたが、ここでは触れません。
