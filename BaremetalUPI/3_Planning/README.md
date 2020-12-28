@@ -237,3 +237,7 @@ route add -net 172.16.0.0 netmask 255.255.255.0 gw 192.168.124.254  eno1.342
 `OCSノード`に必要となるリソースは、ドライブが増えるごとに追加でリソースが必要になることに注意が必要です。[OCSノードの最小リソース要件](https://access.redhat.com/documentation/en-us/red_hat_openshift_container_storage/4.5/html-single/planning_your_deployment/index#resource-requirements_rhocs) のリンクに詳細が書かれていますが、必要最低限のリソースだと`OCS`が完全に稼働しないことが見られたため、今回は余裕を持たせた構成としています。
 
 また、`OCS`では、3ノードにまたがって三重でレプリケーションして冗長化するため、3ノード全てに`PV`として使用する容量分のドライブを搭載して下さい。
+
+---
+
+## → Next: [4. クラスターインストールの実行](../4_Installation/README.md)
