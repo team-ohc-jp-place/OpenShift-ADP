@@ -48,19 +48,19 @@ OpenShiftクラスターは様々な要素によって構成されています�
 
 | サーバー        | vCPU(HT-on) | Memory      |  Disk   |    OS   |         ホスト名            | IP Address  |  note   | 
 |:---------------|:--------------|:------------|:--------|:--------|:---------------------------|:------------|:------|
-|BootStrapノード  | 4vCPU         | 16GByte     | 120G    |  RHEL COS |bs.ocp45.example.localdomain|172.16.0.11 |一時的|
-|Masterノード     | 4vCPU         | 16GByte     | 120G    |  RHEL COS |m1.ocp45.example.localdomain| 172.16.0.21 |     | 
-|                | 4vCPU         | 16GByte     | 120G    |  RHEL COS |m2.ocp45.example.localdomain| 172.16.0.22 |     | 
-|                | 4vCPU         | 16GByte     | 120G    |  RHEL COS |m3.ocp45.example.localdomain| 172.16.0.23 |     | 
-|Workerノード     | 4vCPU         | 16GByte     | 120G    |  RHEL COS |w1.ocp45.example.localdomain |172.16.0.31 |     | 
-|                | 4vCPU         | 16GByte     | 120G    |  RHEL COS |w2.ocp45.example.localdomain| 172.16.0.32 |     | 
-|                | 4vCPU         | 16GByte     | 120G    |  RHEL COS |w3.ocp45.example.localdomain| 172.16.0.33 |     | 
-|Infraノード      | 4vCPU         | 16GByte     | 120G    |  RHEL COS |i1.ocp45.example.localdomain|172.16.0.41 |     | 
-|                | 4vCPU         | 16GByte     | 120G    |  RHEL COS |i2.ocp45.example.localdomain|172.16.0.42 |     | 
-|                | 4vCPU         | 16GByte     | 120G    |  RHEL COS |i3.ocp45.example.localdomain|172.16.0.43 |     | 
-|OCSノード        | 16vCPU        | 32GByte     | 120G    |  RHEL COS |s1.ocp45.example.localdomain |172.16.0.51 | 1 TiB SSD x3 別途搭載 | 
-|                | 16vCPU        | 32GByte     | 120G    |  RHEL COS |s2.ocp45.example.localdomain| 172.16.0.52 | 1 TiB SSD x3 別途搭載 | 
-|                | 16vCPU        | 32GByte     | 120G    |  RHEL COS |s3.ocp45.example.localdomain| 172.16.0.53 | 1 TiB SSD x3 別途搭載 | 
+|BootStrapノード  | 4vCPU         | 16GByte     | 120G    |  RHEL CoreOS |bs.ocp45.example.localdomain|172.16.0.11 |一時的|
+|Masterノード     | 4vCPU         | 16GByte     | 120G    |  RHEL CoreOS |m1.ocp45.example.localdomain| 172.16.0.21 |     | 
+|                | 4vCPU         | 16GByte     | 120G    |  RHEL CoreOS |m2.ocp45.example.localdomain| 172.16.0.22 |     | 
+|                | 4vCPU         | 16GByte     | 120G    |  RHEL CoreOS |m3.ocp45.example.localdomain| 172.16.0.23 |     | 
+|Workerノード     | 4vCPU         | 16GByte     | 120G    |  RHEL CoreOS |w1.ocp45.example.localdomain |172.16.0.31 |     | 
+|                | 4vCPU         | 16GByte     | 120G    |  RHEL CoreOS |w2.ocp45.example.localdomain| 172.16.0.32 |     | 
+|                | 4vCPU         | 16GByte     | 120G    |  RHEL CoreOS |w3.ocp45.example.localdomain| 172.16.0.33 |     | 
+|Infraノード      | 4vCPU         | 16GByte     | 120G    |  RHEL CoreOS |i1.ocp45.example.localdomain|172.16.0.41 |     | 
+|                | 4vCPU         | 16GByte     | 120G    |  RHEL CoreOS |i2.ocp45.example.localdomain|172.16.0.42 |     | 
+|                | 4vCPU         | 16GByte     | 120G    |  RHEL CoreOS |i3.ocp45.example.localdomain|172.16.0.43 |     | 
+|OCSノード        | 16vCPU        | 32GByte     | 120G    |  RHEL CoreOS |s1.ocp45.example.localdomain |172.16.0.51 | 1 TiB SSD x3 別途搭載 | 
+|                | 16vCPU        | 32GByte     | 120G    |  RHEL CoreOS |s2.ocp45.example.localdomain| 172.16.0.52 | 1 TiB SSD x3 別途搭載 | 
+|                | 16vCPU        | 32GByte     | 120G    |  RHEL CoreOS |s3.ocp45.example.localdomain| 172.16.0.53 | 1 TiB SSD x3 別途搭載 | 
 
 
 ※各`ノード`のスペックは、OpenShift 4.5 のマニュアルを基準にしています。<a href="https://docs.openshift.com/container-platform/4.5/installing/installing_bare_metal/installing-restricted-networks-bare-metal.html#minimum-resource-requirements_installing-restricted-networks-bare-metal">Minimum resource requirements</a>
@@ -69,7 +69,7 @@ OpenShiftクラスターは様々な要素によって構成されています�
 
 `BootStrapノード`は、`Masterノード`をセットアップするために必要なサーバーで、`Masterノード`のセットアップが完了した後は必要の無い、一時的なノードです。
 
-`BootStrapノード`と`Masterノード`は、`RHEL CoreOS(RHEL COS)`が必須です。`Workerノード`と`Infraノード`は、`RHEL`もしくは`RHEL COS`が選択できるのですが、この手順ではせっかくなのでコンテナ専用のOSである`RHEL COS`を使用します。
+`BootStrapノード`と`Masterノード`は、`RHEL CoreOS`が必須です。`Workerノード`と`Infraノード`は、`RHEL`もしくは`RHEL CoreOS`が選択できるのですが、この手順ではせっかくなのでコンテナ専用のOSである`RHEL CoreOS`を使用します。
 
 #### Masterノード
 `Masterノード`は、3ノード必要です。
