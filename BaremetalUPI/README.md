@@ -10,14 +10,14 @@
 
 本文書は以下のように、4章で構成されています。
 
-### 1. [はじめに](1_Introduction/README.md)
+### [1. はじめに](1_Introduction/README.md)
 本文書のテーマであるOpenShiftのクラスターインストールと、本文書内の手順で行う内容を簡単に紹介します。
  
-### 2. [OpenShiftの基礎](../2_Overview/README.md)
+### [2. OpenShiftの基礎](../2_Overview/README.md)
 クラスターインストールを行ううえで知っておくべき、OpenShift(およびベースとなるKubernetes)の基礎知識を説明します。
 
-### 3. [クラスターインストールの計画](../3_Planning/README.md)
+### [3. クラスターインストールの計画](../3_Planning/README.md)
 インストールするクラスターの設計や、インストールに必要な周辺サービスの設定を説明します。
 
-### 4. [クラスターインストールの実行](../4_Installation/README.md)
+### [4. クラスターインストールの実行](../4_Installation/README.md)
 クラスターインストールを実行する手順を順番に説明します。
