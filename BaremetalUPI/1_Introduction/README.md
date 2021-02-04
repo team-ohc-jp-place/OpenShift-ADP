@@ -46,7 +46,7 @@
 
 ## 1-3. この文書で実行する内容
 
-この文書では、物理環境であればどこにでも適用できるインストール方法である`Baremetal`環境への `UPI(User Provisioned Infrastructure)`インストールを`OpenShift 4.5`を使用して実行してみます。
+この文書では、物理環境であればどこにでも適用できるインストール方法である`Baremetal`環境への `UPI(User Provisioned Infrastructure)`インストールを`OpenShift 4.6`を使用して実行してみます。
 
 `UPI(User Provisioned Infrastructure)`ですので、自分で、`OpenShiftt`を稼働させるための`DNS`サーバー、`Load Balancer`、`Kubernetes`の`Masterノード`、`Workerノード`等のインストールなどの周辺環境を`Provision`してあげる必要があります。
 

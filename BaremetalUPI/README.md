@@ -1,6 +1,6 @@
 # OpenShift Container Platform 4: Baremetalインストールガイド
 
-この手順は OpenShift 4.5を使用したBaremetalインストールガイドです。
+この手順は OpenShift 4.6を使用したBaremetalインストールガイドです。
 内容について公式の保証があるわけではございません。
 
 一般的なITプロジェクトのために fork、改変して利用する事に関しては、商用利用であっても自由です。それ以外の商用利用や他のWebサイトへの掲載の場合はご相談下さい。

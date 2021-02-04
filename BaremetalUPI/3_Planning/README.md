@@ -48,22 +48,22 @@ OpenShiftクラスターは様々な要素によって構成されています�
 
 | サーバー        | vCPU(HT-on) | Memory      |  Disk   |    OS   |         ホスト名            | IP Address  |  note   | 
 |:---------------|:--------------|:------------|:--------|:--------|:---------------------------|:------------|:------|
-|BootStrapノード  | 4vCPU         | 16GByte     | 120G    |  RHEL CoreOS |bs.ocp45.example.localdomain|172.16.0.11 |一時的|
-|Masterノード     | 4vCPU         | 16GByte     | 120G    |  RHEL CoreOS |m1.ocp45.example.localdomain| 172.16.0.21 |     | 
-|                | 4vCPU         | 16GByte     | 120G    |  RHEL CoreOS |m2.ocp45.example.localdomain| 172.16.0.22 |     | 
-|                | 4vCPU         | 16GByte     | 120G    |  RHEL CoreOS |m3.ocp45.example.localdomain| 172.16.0.23 |     | 
-|Workerノード     | 4vCPU         | 16GByte     | 120G    |  RHEL CoreOS |w1.ocp45.example.localdomain |172.16.0.31 |     | 
-|                | 4vCPU         | 16GByte     | 120G    |  RHEL CoreOS |w2.ocp45.example.localdomain| 172.16.0.32 |     | 
-|                | 4vCPU         | 16GByte     | 120G    |  RHEL CoreOS |w3.ocp45.example.localdomain| 172.16.0.33 |     | 
-|Infraノード      | 4vCPU         | 16GByte     | 120G    |  RHEL CoreOS |i1.ocp45.example.localdomain|172.16.0.41 |     | 
-|                | 4vCPU         | 16GByte     | 120G    |  RHEL CoreOS |i2.ocp45.example.localdomain|172.16.0.42 |     | 
-|                | 4vCPU         | 16GByte     | 120G    |  RHEL CoreOS |i3.ocp45.example.localdomain|172.16.0.43 |     | 
-|OCSノード        | 16vCPU        | 32GByte     | 120G    |  RHEL CoreOS |s1.ocp45.example.localdomain |172.16.0.51 | 1 TiB SSD x3 別途搭載 | 
-|                | 16vCPU        | 32GByte     | 120G    |  RHEL CoreOS |s2.ocp45.example.localdomain| 172.16.0.52 | 1 TiB SSD x3 別途搭載 | 
-|                | 16vCPU        | 32GByte     | 120G    |  RHEL CoreOS |s3.ocp45.example.localdomain| 172.16.0.53 | 1 TiB SSD x3 別途搭載 | 
+|BootStrapノード  | 4vCPU         | 16GByte     | 120G    |  RHEL CoreOS |bs.ocp46.example.localdomain|172.16.0.11 |一時的|
+|Masterノード     | 4vCPU         | 16GByte     | 120G    |  RHEL CoreOS |m1.ocp46.example.localdomain| 172.16.0.21 |     | 
+|                | 4vCPU         | 16GByte     | 120G    |  RHEL CoreOS |m2.ocp46.example.localdomain| 172.16.0.22 |     | 
+|                | 4vCPU         | 16GByte     | 120G    |  RHEL CoreOS |m3.ocp46.example.localdomain| 172.16.0.23 |     | 
+|Workerノード     | 4vCPU         | 16GByte     | 120G    |  RHEL CoreOS |w1.ocp46.example.localdomain |172.16.0.31 |     | 
+|                | 4vCPU         | 16GByte     | 120G    |  RHEL CoreOS |w2.ocp46.example.localdomain| 172.16.0.32 |     | 
+|                | 4vCPU         | 16GByte     | 120G    |  RHEL CoreOS |w3.ocp46.example.localdomain| 172.16.0.33 |     | 
+|Infraノード      | 4vCPU         | 16GByte     | 120G    |  RHEL CoreOS |i1.ocp46.example.localdomain|172.16.0.41 |     | 
+|                | 4vCPU         | 16GByte     | 120G    |  RHEL CoreOS |i2.ocp46.example.localdomain|172.16.0.42 |     | 
+|                | 4vCPU         | 16GByte     | 120G    |  RHEL CoreOS |i3.ocp46.example.localdomain|172.16.0.43 |     | 
+|OCSノード        | 16vCPU        | 32GByte     | 120G    |  RHEL CoreOS |s1.ocp46.example.localdomain |172.16.0.51 | 1 TiB SSD x3 別途搭載 | 
+|                | 16vCPU        | 32GByte     | 120G    |  RHEL CoreOS |s2.ocp46.example.localdomain| 172.16.0.52 | 1 TiB SSD x3 別途搭載 | 
+|                | 16vCPU        | 32GByte     | 120G    |  RHEL CoreOS |s3.ocp46.example.localdomain| 172.16.0.53 | 1 TiB SSD x3 別途搭載 | 
 
 
-※各`ノード`のスペックは、OpenShift 4.5 のマニュアルを基準にしています。<a href="https://docs.openshift.com/container-platform/4.5/installing/installing_bare_metal/installing-restricted-networks-bare-metal.html#minimum-resource-requirements_installing-restricted-networks-bare-metal">Minimum resource requirements</a>
+※各`ノード`のスペックは、OpenShift 4.6 のマニュアルを基準にしています。<a href="https://docs.openshift.com/container-platform/4.6/installing/installing_bare_metal/installing-restricted-networks-bare-metal.html#minimum-resource-requirements_installing-restricted-networks-bare-metal">Minimum resource requirements</a>
 
 #### BootStrapノード
 
@@ -74,16 +74,16 @@ OpenShiftクラスターは様々な要素によって構成されています�
 #### Masterノード
 `Masterノード`は、3ノード必要です。
 
-`Masterノード`に必要となるスペックは、[Masterノードの最小リソース要件](https://access.redhat.com/documentation/ja-jp/openshift_container_platform/4.5/html/installing_on_bare_metal/installing-on-bare-metal#installation-requirements-user-infra_installing-bare-metal)のリンク先が最小要件ですが、管理対象の`Workerノード`の数で変わります。
+`Masterノード`に必要となるスペックは、[Masterノードの最小リソース要件](https://access.redhat.com/documentation/ja-jp/openshift_container_platform/4.6/html/installing_on_bare_metal/installing-on-bare-metal#installation-requirements-user-infra_installing-bare-metal)のリンク先が最小要件ですが、管理対象の`Workerノード`の数で変わります。
 
-Master Nodeはスケールアウトしたり、後からCPUやRAMのサイズを変更することができないため、あらかじめクラスターに配備する`Workerノード`の最大数を想定してスペックを決めるようにしてください。[Masterノードの推奨スペック](https://access.redhat.com/documentation/ja-jp/openshift_container_platform/4.5/html/scalability_and_performance/master-node-sizing_)のリンク先が参考となります。
+Master Nodeはスケールアウトしたり、後からCPUやRAMのサイズを変更することができないため、あらかじめクラスターに配備する`Workerノード`の最大数を想定してスペックを決めるようにしてください。[Masterノードの推奨スペック](https://access.redhat.com/documentation/ja-jp/openshift_container_platform/4.6/html/scalability_and_performance/master-node-sizing_)のリンク先が参考となります。
 
 
 #### Workerノード
 `Workerノード`は、ユーザーのアプリケーション・コンテナが載る`ノード`です。最低2`ノード`からですが、この手順では3`ノード`作ります。
 `OpenShift`としての最小構成では`Masterノード`と`Workerノード`を統合して合計で3`ノード`にする方法もありますが、この手法は`Edge`ロケーションでHWリソースが潤沢に取れない場合などのユースケースが想定されているため、この設計では採用しませんでした。
 
-`Workerノード`に必要となるスペックは、[Workerノードの最小リソース要件](https://access.redhat.com/documentation/ja-jp/openshift_container_platform/4.5/html/installing_on_bare_metal/installing-on-bare-metal#installation-requirements-user-infra_installing-bare-metal)のリンク先が最小要件です。
+`Workerノード`に必要となるスペックは、[Workerノードの最小リソース要件](https://access.redhat.com/documentation/ja-jp/openshift_container_platform/4.6/html/installing_on_bare_metal/installing-on-bare-metal#installation-requirements-user-infra_installing-bare-metal)のリンク先が最小要件です。
 
 実際には`Workerノード`で稼働するPodが求めるリソースに依存するので、一概に推奨スペックを言うことをは難しいです。あらかじめ稼働するアプリケーションが全て分かっている場合は必要なリソースを計算できますが、分からない場合は暫定的にスペックを決めてスケールアウトする方針がよいでしょう。
 
@@ -167,7 +167,7 @@ Master Nodeはスケールアウトしたり、後からCPUやRAMのサイズを
 
 一方で、`OpenShift`のコンポーネント間の通信で使用するポートについては以下に詳細があります。
 
-参考：<a href="https://docs.openshift.com/container-platform/4.5/installing/installing_bare_metal/installing-bare-metal.html#installation-network-user-infra_installing-bare-metal">Installing a cluster on bare metal - Installing on bare metal | Installing | OpenShift Container Platform 4.5</a>
+参考：<a href="https://docs.openshift.com/container-platform/4.6/installing/installing_bare_metal/installing-bare-metal.html#installation-network-user-infra_installing-bare-metal">Installing a cluster on bare metal - Installing on bare metal | Installing | OpenShift Container Platform 4.6</a>
 
 ### 3-3-2. IPアドレスのレンジについて
 
@@ -203,12 +203,12 @@ route add -net 172.16.0.0 netmask 255.255.255.0 gw 192.168.124.254  eno1.342
 
 | ドメイン名                               | この手順の名前                       |   用途         |   
 |:----------------------------------------|:------------------------------------|:--------------|
-| api.\<cluster_name\>.\<base_domain\>.        | api.ocp45.example.localdomain.     |  Kubernetes API |
-| api-int.\<cluster_name\>.\<base_domain\>.    | api-int.ocp45.example.localdomain. |Kubernetes API |
-| *.app.\<cluster_name\>.\<base_domain\>.   | *.ocp45.example.localdomain.       | Routes |
+| api.\<cluster_name\>.\<base_domain\>.        | api.ocp46.example.localdomain.     |  Kubernetes API |
+| api-int.\<cluster_name\>.\<base_domain\>.    | api-int.ocp46.example.localdomain. |Kubernetes API |
+| *.app.\<cluster_name\>.\<base_domain\>.   | *.ocp46.example.localdomain.       | Routes |
 
 この手順書では、
-- \<cluster_name\> = `ocp45`
+- \<cluster_name\> = `ocp46`
 - \<base_domain\> = `example.localdomain` 
 
 としました。これらの値は、後で`DNS`に登録していきます。
@@ -234,7 +234,7 @@ route add -net 172.16.0.0 netmask 255.255.255.0 gw 192.168.124.254  eno1.342
 ### 3-4-1. OCSノードの設計
 `OCSノード`は3ノード以上が必要なため、本構成では3台で構成します。
 
-`OCSノード`に必要となるリソースは、ドライブが増えるごとに追加でリソースが必要になることに注意が必要です。[OCSノードの最小リソース要件](https://access.redhat.com/documentation/en-us/red_hat_openshift_container_storage/4.5/html-single/planning_your_deployment/index#resource-requirements_rhocs) のリンクに詳細が書かれていますが、必要最低限のリソースだと`OCS`が完全に稼働しないことが見られたため、今回は余裕を持たせた構成としています。
+`OCSノード`に必要となるリソースは、ドライブが増えるごとに追加でリソースが必要になることに注意が必要です。[OCSノードの最小リソース要件](https://access.redhat.com/documentation/ja-jp/red_hat_openshift_container_storage/4.6/html-single/planning_your_deployment/index#resource-requirements_rhocs) のリンクに詳細が書かれていますが、必要最低限のリソースだと`OCS`が完全に稼働しないことが見られたため、今回は余裕を持たせた構成としています。
 
 また、`OCS`では、3ノードにまたがって三重でレプリケーションして冗長化するため、3ノード全てに`PV`として使用する容量分のドライブを搭載して下さい。
 
